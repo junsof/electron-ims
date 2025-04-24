@@ -1,0 +1,17 @@
+export const ROUTES = {
+  DASHBOARD: "/",
+  PRODUCTS: "/products",
+  BILLING: "/billing",
+  INVOICES: "/invoices",
+  SALES_HISTORY: "/sales-history",
+  RETURNS: "/returns",
+  ORDERS: "/orders",
+  STOCKS: "/stocks",
+  CUSTOMERS: "/customers",
+  SUPPLIERS: "/suppliers",
+  EXPENSES: "/expenses",
+  REVENUE_TRACKING: "/revenue-tracking",
+  SALES_REPORTS: "/sales-reports",
+  INVENTORY_REPORTS: "/inventory-reports",
+  USER_MANAGEMENT: "/user-management",
+};

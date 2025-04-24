@@ -6,30 +6,39 @@
   "scripts": {
     "dev": "concurrently -k \"vite\" \"tsc -p tsconfig.main.json --watch\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron dist/main.js\"",
     "build": "vite build && tsc -p tsconfig.main.json",
-    "package:win": "npm run build && electron-builder --win --x86",
+    "package:win": "npm run build && electron-builder --win --ia32",
     "package:mac": "npm run build && electron-builder --mac",
     "package:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "antd": "5.24.6",
+    "apexcharts": "4.5.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "pg-hstore": "2.3.4",
+    "react": "19.0.0",
+    "react-apexcharts": "1.7.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "7.5.0",
+    "sequelize": "6.37.7",
+    "sqlite3": "5.1.7"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "concurrently": "^9.1.2",
-    "cross-env": "^7.0.3",
-    "electron": "^35.2.1",
-    "electron-builder": "^26.0.12",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1",
-    "wait-on": "^8.0.3"
+    "@eslint/js": "9.22.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "@vitejs/plugin-react": "4.3.4",
+    "concurrently": "9.1.2",
+    "cross-env": "7.0.3",
+    "electron": "35.2.1",
+    "electron-builder": "26.0.12",
+    "eslint": "9.22.0",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.19",
+    "globals": "16.0.0",
+    "typescript": "5.7.2",
+    "typescript-eslint": "8.26.1",
+    "vite": "6.3.1",
+    "wait-on": "8.0.3"
   }
 }
