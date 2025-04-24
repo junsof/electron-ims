@@ -1,0 +1,18 @@
+{
+  "appId": "com.example.electron-ims",
+  "productName": "ElectronIMS",
+  "files": ["dist/**/*", "node_modules/**/*", "package.json"],
+  "directories": {
+    "buildResources": "renderer",
+    "output": "release"
+  },
+  "win": {
+    "icon": "public/icons/icon.ico"
+  },
+  "mac": {
+    "icon": "public/icons/icon.icns"
+  },
+  "linux": {
+    "icon": "public/icons/icon.png"
+  }
+}
