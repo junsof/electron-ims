@@ -1,54 +1,66 @@
-# React + TypeScript + Vite
+# ElectronIMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ElectronIMS is a cross-platform Inventory Management System built with Electron, React, Vite, TypeScript, SQLite3, and Sequelize. It supports hot module reloading during development and can be packaged for Windows (32-bit), macOS, and Linux using electron-builder.
 
-Currently, two official plugins are available:
+## 🛠 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Electron – Desktop app shell
+- React – UI library
+- Vite – Lightning-fast build tool with HMR
+- TypeScript – Static typing
+- SQLite3 – Embedded database
+- Sequelize – ORM for database access
+- electron-builder – For packaging the app
 
-## Expanding the ESLint configuration
+## 📆 Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+electron-ims/
+├── electron/ # Electron main, preload scripts & database
+├── src/ # React app (frontend)
+├── dist/ # Build output (frontend)
+├── release/ # Packaged executables
+├── public/ # Icons and static files
+├── package.json
+├── vite.config.ts
+└── tsconfig\*.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- Node.js >= 22.14.0
+
+### Install Dependencies
+
+```bash
+npm install
 ```
+
+### Development (with HMR)
+
+```bash
+npm run dev
+```
+
+- Starts Vite dev server
+- Watches Electron files with tsc
+- Launches Electron with live reload
+
+## 🛠 Packaging
+
+```bash
+npm run package:win # Windows
+npm run package:mac # macOS
+npm run package:linux # Linux
+```
+
+- Builds renderer via Vite
+- Compiles Electron main/preload via TypeScript
+- Creates platform-specific distributables:
+- Output goes into the release/ folder.
+
+## 📄 License
+
+MIT – Free to use and modify.
