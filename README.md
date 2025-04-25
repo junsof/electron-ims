@@ -1,6 +1,6 @@
-# ElectronIMS
+# Inventory Management System (IMS)
 
-ElectronIMS is a cross-platform Inventory Management System built with Electron, React, Vite, TypeScript, SQLite3, and Sequelize. It supports hot module reloading during development and can be packaged for Windows (32-bit), macOS, and Linux using electron-builder.
+**IMS** is a cross-platform Inventory & Sales Management System built with Electron, React, Vite, TypeScript, SQLite3, and Sequelize. It supports hot module reloading during development and can be packaged for Windows (32-bit), macOS, and Linux using electron-builder.
 
 ## 🛠 Tech Stack
 
