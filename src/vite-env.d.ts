@@ -4,6 +4,7 @@ interface IProduct {
   id: number;
   name: string;
   sku: string;
+  upc: string;
   cost_price: number;
   selling_price: number;
   stock_quantity: number;
@@ -33,6 +34,7 @@ interface Window {
     ) => Promise<number[]>;
     deleteProduct: (id: number) => Promise<number[]>;
     deleteMultipleProducts: (ids: number[]) => Promise<number[]>;
+    addProductStock: (id: number, quantity: number) => Promise<number[]>;
     // Category
     getCategories: () => Promise<{ dataValues: ICategory }[]>;
     addCategory: (

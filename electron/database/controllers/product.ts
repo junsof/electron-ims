@@ -9,6 +9,7 @@ export const registerProductController = (ipcMain: IpcMain) => {
     return await Product.create({
       name: product.name,
       sku: product.sku,
+      upc: product.upc,
       cost_price: product.cost_price,
       selling_price: product.selling_price,
       stock_quantity: product.stock_quantity,
@@ -20,6 +21,7 @@ export const registerProductController = (ipcMain: IpcMain) => {
       {
         name: product.name,
         sku: product.sku,
+        upc: product.upc,
         cost_price: product.cost_price,
         selling_price: product.selling_price,
         stock_quantity: product.stock_quantity,
@@ -33,5 +35,11 @@ export const registerProductController = (ipcMain: IpcMain) => {
   });
   ipcMain.handle("delete-multiple-products", async (event, ids) => {
     return await Product.destroy({ where: { id: ids } });
+  });
+  ipcMain.handle("add-product-stock", async (event, id, quantity) => {
+    return await Product.update(
+      { stock_quantity: quantity },
+      { where: { id } }
+    );
   });
 };

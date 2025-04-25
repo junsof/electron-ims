@@ -9,6 +9,9 @@ import {
   Form,
   InputNumber,
   message,
+  Tooltip,
+  Typography,
+  Space,
 } from "antd";
 import {
   SearchOutlined,
@@ -16,11 +19,14 @@ import {
   PlusOutlined,
   FileExcelOutlined,
   EditOutlined,
+  PlusCircleOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import type { ColumnType } from "antd/es/table";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
+const { Text } = Typography;
 
 type Product = Window["types"]["Product"];
 type Category = Window["types"]["Category"];
@@ -33,13 +39,18 @@ export const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isAddStockModalVisible, setIsAddStockModalVisible] = useState(false); // New state for Add Stock Modal
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [addingStockProduct, setAddingStockProduct] = useState<Product | null>(
+    null
+  ); // New state to hold the product being stocked
   const [selectedProductKeys, setSelectedProductKeys] = useState<React.Key[]>(
     []
   ); // For checkbox selection
 
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
+  const [addStockForm] = Form.useForm(); // Form for Add Stock Modal
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +103,7 @@ export const Products = () => {
       const addedProduct = await window.api.addProduct({
         name: values.name,
         sku: values.sku,
+        upc: values.upc,
         cost_price: Number(values.cost_price),
         selling_price: Number(values.selling_price),
         stock_quantity: Number(values.stock_quantity),
@@ -136,6 +148,45 @@ export const Products = () => {
     } catch (error) {
       console.error("Failed to edit product:", error);
       message.error("Failed to update product.");
+    }
+  };
+
+  const showAddStockModal = (record: Product) => {
+    // Function to show Add Stock Modal
+    setAddingStockProduct(record); // Store the product to add stock to
+    addStockForm.setFieldsValue({ stockToAdd: 0 }); // Initialize form field
+    setIsAddStockModalVisible(true); // Set modal visibility to true
+  };
+
+  const handleAddStockCancel = () => {
+    // Function to handle Add Stock Modal cancel
+    setIsAddStockModalVisible(false); // Set modal visibility to false
+    setAddingStockProduct(null); // Clear the product
+    addStockForm.resetFields(); // Reset the form
+  };
+
+  const handleAddStockOk = async () => {
+    // Function to handle Add Stock Modal OK button
+    try {
+      if (!addingStockProduct?.id) return;
+      const values = await addStockForm.validateFields(); // Validate the form
+      const newStockQuantity =
+        (addingStockProduct?.stock_quantity || 0) + Number(values.stockToAdd); // Calculate new stock
+      await window.api.addProductStock(addingStockProduct.id, newStockQuantity); // Update the product stock
+      setDataSource((prev) =>
+        prev.map((item) =>
+          item.id === addingStockProduct.id
+            ? { ...item, stock_quantity: newStockQuantity }
+            : item
+        )
+      ); // Update the data source
+      setIsAddStockModalVisible(false); // Close the modal
+      setAddingStockProduct(null); // Clear the product
+      addStockForm.resetFields(); // Reset the form
+      message.success("Stock added successfully.");
+    } catch (error) {
+      console.error("Failed to add stock:", error);
+      message.error("Failed to add stock.");
     }
   };
 
@@ -239,17 +290,43 @@ export const Products = () => {
       dataIndex: "name",
       key: "name",
       responsive: ["md"],
-      width: 150,
+      width: 160,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
     },
     {
-      title: "SKU",
+      title: (
+        <Space>
+          SKU
+          <Tooltip title="Stock Keeping Unit">
+            <InfoCircleOutlined style={{ fontSize: 12, color: "#999" }} />
+          </Tooltip>
+        </Space>
+      ),
       dataIndex: "sku",
       key: "sku",
       responsive: ["sm"],
-      width: 120,
+      width: 100,
+      render: (text) => <span>{text}</span>,
+      onHeaderCell: () => ({
+        style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
+      }),
+    },
+    {
+      title: (
+        <Space>
+          UPC
+          <Tooltip title="Universal Product Code">
+            <InfoCircleOutlined style={{ fontSize: 12, color: "#999" }} />
+          </Tooltip>
+        </Space>
+      ),
+      dataIndex: "upc",
+      key: "upc",
+      responsive: ["sm"],
+      width: 100,
+      render: (text) => <span>{text}</span>,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
@@ -294,7 +371,7 @@ export const Products = () => {
       dataIndex: "category_id",
       key: "category_id",
       responsive: ["lg"],
-      width: 120,
+      width: 140,
       render: (category_id: number) =>
         categories.find((c) => c.id === category_id)?.name,
       onHeaderCell: () => ({
@@ -304,9 +381,13 @@ export const Products = () => {
     {
       title: "Action",
       key: "action",
-      width: 180,
+      width: 100,
+      align: "right", // Align buttons to the right
       render: (_: unknown, record: Product) => (
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div
+          style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}
+        >
+          {/* Added justifyContent */}
           <Button
             size="small"
             onClick={() => showEditModal(record)}
@@ -322,13 +403,32 @@ export const Products = () => {
           >
             Delete
           </Button>
+          <Button
+            size="small"
+            onClick={() => showAddStockModal(record)}
+            icon={<PlusCircleOutlined />}
+          >
+            Add Stock
+          </Button>
         </div>
       ),
       onHeaderCell: () => ({
-        style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
+        style: {
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          background: "#fff",
+          textAlign: "left", // Also align header to the right
+        },
       }),
     },
   ];
+
+  // Move 'Action' to the end of the columns array
+  const actionColumn = columns.pop();
+  if (actionColumn) {
+    columns.push(actionColumn);
+  }
 
   return (
     <div>
@@ -398,6 +498,7 @@ export const Products = () => {
 
       <Modal
         title="Edit Product"
+        okText="Update Product"
         open={isEditModalVisible}
         onOk={handleEditOk}
         onCancel={handleEditCancel}
@@ -414,6 +515,13 @@ export const Products = () => {
             name="sku"
             label="SKU"
             rules={[{ required: true, message: "Please enter SKU!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="upc"
+            label="UPC"
+            rules={[{ required: true, message: "Please enter UPC!" }]}
           >
             <Input />
           </Form.Item>
@@ -479,6 +587,13 @@ export const Products = () => {
             <Input />
           </Form.Item>
           <Form.Item
+            name="upc"
+            label="UPC"
+            rules={[{ required: true, message: "Please enter UPC!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             name="stock_quantity"
             label="Stock Quantity"
             rules={[
@@ -513,6 +628,25 @@ export const Products = () => {
                 </Option>
               ))}
             </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Add Stock Modal */}
+      <Modal
+        title="Add Stock"
+        okText="Add Stock"
+        open={isAddStockModalVisible}
+        onOk={handleAddStockOk}
+        onCancel={handleAddStockCancel}
+      >
+        <Form form={addStockForm} layout="vertical">
+          <Form.Item
+            name="stockToAdd"
+            label="Stock to Add"
+            rules={[{ required: true, message: "Please enter stock to add!" }]}
+          >
+            <InputNumber min={0} />
           </Form.Item>
         </Form>
       </Modal>

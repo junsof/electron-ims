@@ -10,6 +10,7 @@ export const Product = sequelize.define("Product", {
   },
   name: DataTypes.STRING,
   sku: DataTypes.STRING,
+  upc: DataTypes.STRING,
   cost_price: DataTypes.DECIMAL,
   selling_price: DataTypes.DECIMAL,
   stock_quantity: DataTypes.INTEGER,

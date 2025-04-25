@@ -10,7 +10,7 @@ if (started) {
 }
 
 const createWindow = async () => {
-  await sequelize.sync();
+  await sequelize.sync({ force: false });
 
   const win = new BrowserWindow({
     width: 800,
