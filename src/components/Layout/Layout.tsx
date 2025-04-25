@@ -42,7 +42,7 @@ const items: MenuItem[] = [
 
   getItem("Inventory", "1", <InboxOutlined />, [
     getItem("Products", ROUTES.PRODUCTS, <BoxPlotOutlined />),
-    getItem("Stocks", ROUTES.STOCKS, <InboxOutlined />),
+    getItem("Categories", ROUTES.CATEGORIES, <InboxOutlined />),
   ]),
   getItem("Purchases", "2", <InboxOutlined />, [
     getItem("Orders", ROUTES.ORDERS, <InboxOutlined />),

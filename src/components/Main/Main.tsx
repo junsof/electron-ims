@@ -4,7 +4,7 @@ import { Dashboard } from "../../modules/dashboard/dashboard";
 import { Products } from "../../modules/inventory/products/products";
 import { AppLayout } from "../../components/Layout/Layout";
 import { ROUTES } from "../../constants";
-import { Stocks } from "../../modules/inventory/stocks/stocks";
+import { CategoryPage } from "../../modules/inventory/categories/categories";
 
 export const Main = () => {
   return (
@@ -13,7 +13,7 @@ export const Main = () => {
         <Routes>
           <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
           <Route path={ROUTES.PRODUCTS} element={<Products />} />
-          <Route path={ROUTES.STOCKS} element={<Stocks />} />
+          <Route path={ROUTES.CATEGORIES} element={<CategoryPage />} />
         </Routes>
       </AppLayout>
     </HashRouter>

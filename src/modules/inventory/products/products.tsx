@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Input,
@@ -8,67 +8,55 @@ import {
   Modal,
   Form,
   InputNumber,
+  message,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  FileExcelOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import type { ColumnType } from "antd/es/table";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
 
-interface Product {
-  id: number | string;
-  name: string;
-  sku: string;
-  price: number;
-  cost_price: number;
-  stock_quantity: number;
-  category: string;
-  supplier_id: number;
-  reorder_level: number;
-}
-
-const initialDataSource: Product[] = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  name: `Product ${i + 1}`,
-  sku: `SKU${(i + 1).toString().padStart(3, "0")}`,
-  price: parseFloat((Math.random() * 100).toFixed(2)),
-  cost_price: parseFloat((Math.random() * 100).toFixed(2)),
-  stock_quantity: Math.floor(Math.random() * 30),
-  category: ["shirts", "pants", "accessories"][Math.floor(Math.random() * 3)],
-  supplier_id: Math.floor(Math.random() * 10) + 1,
-  reorder_level: Math.floor(Math.random() * 10) + 1,
-}));
-
-interface StockLocation {
-  value: string;
-  label: string;
-}
-
-const stockLocations: StockLocation[] = [
-  { value: "main", label: "Main" },
-  { value: "warehouse", label: "Warehouse" },
-];
+type Product = Window["types"]["Product"];
+type Category = Window["types"]["Category"];
 
 export const Products = () => {
   const [dataSource, setDataSource] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<string | undefined>(
-    "main"
-  );
+  const [selectedProductKeys, setSelectedProductKeys] = useState<React.Key[]>(
+    []
+  ); // For checkbox selection
 
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
 
   useEffect(() => {
-    setTimeout(() => {
-      setDataSource(initialDataSource);
-      setLoading(false);
-    }, 500);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const products = await window.api.getProducts();
+        setDataSource(products.map((product) => product.dataValues));
+        const categoriesData = await window.api.getCategories();
+        setCategories(categoriesData.map((category) => category.dataValues));
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        message.error("Failed to load products and categories.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleSearch = (value: string) => {
@@ -79,16 +67,13 @@ export const Products = () => {
     setSelectedCategory(value);
   };
 
-  const handleLocationChange = (value: string | undefined) => {
-    setSelectedLocation(value);
-  };
-
   const filteredDataSource = dataSource.filter((item) => {
     const searchMatch =
       item.name.toLowerCase().includes(searchText.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchText.toLowerCase());
     const categoryMatch =
-      selectedCategory === "all" || item.category === selectedCategory;
+      selectedCategory === "all" ||
+      item.category_id === Number(selectedCategory);
     return searchMatch && categoryMatch;
   });
 
@@ -101,21 +86,25 @@ export const Products = () => {
     form.resetFields();
   };
 
-  const handleAddOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        const newProduct: Product = {
-          id: Date.now().toString(),
-          ...values,
-        };
-        setDataSource([...dataSource, newProduct]);
-        setIsAddModalVisible(false);
-        form.resetFields();
-      })
-      .catch((info) => {
-        console.log("Validate Failed:", info);
+  const handleAddOk = async () => {
+    try {
+      const values = await form.validateFields();
+      const addedProduct = await window.api.addProduct({
+        name: values.name,
+        sku: values.sku,
+        cost_price: Number(values.cost_price),
+        selling_price: Number(values.selling_price),
+        stock_quantity: Number(values.stock_quantity),
+        category_id: Number(values.category_id),
       });
+      setDataSource([...dataSource, addedProduct.dataValues]);
+      setIsAddModalVisible(false);
+      form.resetFields();
+      message.success("Product added successfully.");
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      message.error("Failed to add product.");
+    }
   };
 
   const showEditModal = (record: Product) => {
@@ -130,32 +119,36 @@ export const Products = () => {
     editForm.resetFields();
   };
 
-  const handleEditOk = () => {
-    editForm
-      .validateFields()
-      .then((values) => {
-        const updatedDataSource = dataSource.map((item) =>
-          item.id === editingProduct?.id ? { ...item, ...values } : item
-        );
-        setDataSource(updatedDataSource);
-        setIsEditModalVisible(false);
-        setEditingProduct(null);
-        editForm.resetFields();
-      })
-      .catch((info) => {
-        console.log("Validate Failed:", info);
-      });
+  const handleEditOk = async () => {
+    try {
+      if (!editingProduct?.id) return;
+      const values = await editForm.validateFields();
+      await window.api.editProduct(editingProduct?.id, values);
+      setDataSource((prev) =>
+        prev.map((item) =>
+          item.sku === editingProduct?.sku ? { ...item, ...values } : item
+        )
+      );
+      setIsEditModalVisible(false);
+      setEditingProduct(null);
+      editForm.resetFields();
+      message.success("Product updated successfully.");
+    } catch (error) {
+      console.error("Failed to edit product:", error);
+      message.error("Failed to update product.");
+    }
   };
 
   const handleExportCSV = () => {
     const csvData = [
-      ["Name", "SKU", "Stock", "Price", "Category"],
+      ["Name", "SKU", "Stock", "Cost Price", "Sale Price", "Category"],
       ...filteredDataSource.map((item) => [
         item.name,
         item.sku,
         item.stock_quantity,
-        item.price,
-        item.category,
+        item.cost_price,
+        item.selling_price,
+        categories.find((c) => c.id === item.category_id)?.name,
       ]),
     ]
       .map((row) => row.join(","))
@@ -170,6 +163,74 @@ export const Products = () => {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this product?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await window.api.deleteProduct(id);
+          setDataSource((prev) => prev.filter((product) => product.id !== id));
+          message.success("Product deleted successfully.");
+        } catch (error) {
+          console.error("Failed to delete product:", error);
+          message.error("Failed to delete product.");
+        }
+      },
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedProductKeys.length === 0) {
+      message.warning("Please select products to delete.");
+      return;
+    }
+
+    Modal.confirm({
+      title: "Are you sure you want to delete the selected products?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          const idsToDelete = selectedProductKeys.map((key) => {
+            const product = dataSource.find((p) => p.id === key);
+            return product?.id;
+          });
+
+          if (idsToDelete.every((id): id is number => typeof id === "number")) {
+            await Promise.all(
+              idsToDelete.map((id) => window.api.deleteProduct(id))
+            );
+            setDataSource((prev) =>
+              prev.filter(
+                (product) => !selectedProductKeys.includes(product.id)
+              )
+            );
+            setSelectedProductKeys([]); // Clear selection after deletion
+            message.success("Selected products deleted successfully.");
+          }
+        } catch (error) {
+          console.error("Failed to delete selected products:", error);
+          message.error("Failed to delete selected products.");
+        }
+      },
+    });
+  };
+
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
+    setSelectedProductKeys(selectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedProductKeys,
+    onChange: onSelectChange,
   };
 
   const columns: ColumnType<Product>[] = [
@@ -208,21 +269,34 @@ export const Products = () => {
       }),
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
+      title: "Cost Price",
+      dataIndex: "cost_price",
+      key: "cost_price",
       width: 100,
-      render: (price: number) => `$${price.toFixed(2)}`,
+      render: (cost_price: number) => `${cost_price?.toLocaleString("en-PK")}`,
+      onHeaderCell: () => ({
+        style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
+      }),
+    },
+    {
+      title: "Sale Price",
+      dataIndex: "selling_price",
+      key: "selling_price",
+      width: 100,
+      render: (selling_price: number) =>
+        `${selling_price?.toLocaleString("en-PK")}`,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "category_id",
+      key: "category_id",
       responsive: ["lg"],
       width: 120,
+      render: (category_id: number) =>
+        categories.find((c) => c.id === category_id)?.name,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
@@ -230,11 +304,25 @@ export const Products = () => {
     {
       title: "Action",
       key: "action",
-      width: 100,
+      width: 180,
       render: (_: unknown, record: Product) => (
-        <Button size="small" onClick={() => showEditModal(record)}>
-          Edit
-        </Button>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Button
+            size="small"
+            onClick={() => showEditModal(record)}
+            icon={<EditOutlined />}
+          >
+            Edit
+          </Button>
+          <Button
+            size="small"
+            onClick={() => handleDeleteProduct(record.id)}
+            danger
+            icon={<DeleteOutlined />}
+          >
+            Delete
+          </Button>
+        </div>
       ),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -244,31 +332,8 @@ export const Products = () => {
 
   return (
     <div>
-      <Header
-        style={{
-          background: "#fff",
-          padding: "0 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <Header style={{ background: "#fff", padding: "0 24px" }}>
         <h1 style={{ margin: 0 }}>Products</h1>
-        <div>
-          <span>Store: </span>
-          <Select
-            defaultValue={selectedLocation}
-            value={selectedLocation}
-            style={{ width: 150 }}
-            onChange={handleLocationChange}
-          >
-            {stockLocations.map((location) => (
-              <Option key={location.value} value={location.value}>
-                {location.label}
-              </Option>
-            ))}
-          </Select>
-        </div>
       </Header>
       <div style={{ padding: "24px" }}>
         <Content style={{ padding: "24px 0" }}>
@@ -292,23 +357,41 @@ export const Products = () => {
               onChange={handleCategoryChange}
             >
               <Option value="all">Category</Option>
-              <Option value="shirts">Shirts</Option>
-              <Option value="pants">Pants</Option>
-              <Option value="accessories">Accessories</Option>
+              {categories?.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
             </Select>
             <div style={{ marginLeft: "auto", display: "flex", gap: "16px" }}>
-              <Button onClick={showAddModal} type="primary">
+              <Button
+                danger
+                onClick={handleDeleteSelected}
+                icon={<DeleteOutlined />}
+                disabled={selectedProductKeys.length === 0}
+              >
+                Delete Selected
+              </Button>
+              <Button onClick={handleExportCSV} icon={<FileExcelOutlined />}>
+                Export CSV
+              </Button>
+              <Button
+                onClick={showAddModal}
+                type="primary"
+                icon={<PlusOutlined />}
+              >
                 Add Product
               </Button>
-              <Button onClick={handleExportCSV}>Export CSV</Button>
             </div>
           </div>
           <Table
+            rowSelection={rowSelection}
             dataSource={loading ? [] : filteredDataSource}
             columns={columns}
             pagination={{ pageSize: 9 }}
             scroll={{ x: true }}
             loading={loading}
+            rowKey="id"
           />
         </Content>
       </div>
@@ -335,7 +418,7 @@ export const Products = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="stock_quantity" // Use the correct field name
+            name="stock_quantity"
             label="Stock Quantity"
             rules={[
               { required: true, message: "Please enter stock quantity!" },
@@ -344,21 +427,30 @@ export const Products = () => {
             <InputNumber min={0} />
           </Form.Item>
           <Form.Item
-            name="price"
-            label="Price"
-            rules={[{ required: true, message: "Please enter price!" }]}
+            name="cost_price"
+            label="Cost Price"
+            rules={[{ required: true, message: "Please enter cost price!" }]}
           >
-            <InputNumber min={0} step={0.01} />
+            <InputNumber min={0} step={1} />
           </Form.Item>
           <Form.Item
-            name="category"
+            name="selling_price"
+            label="Sale Price"
+            rules={[{ required: true, message: "Please enter sale price!" }]}
+          >
+            <InputNumber min={0} step={1} />
+          </Form.Item>
+          <Form.Item
+            name="category_id"
             label="Category"
             rules={[{ required: true, message: "Please select category!" }]}
           >
             <Select>
-              <Option value="shirts">Shirts</Option>
-              <Option value="pants">Pants</Option>
-              <Option value="accessories">Accessories</Option>
+              {categories?.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Form>
@@ -368,6 +460,7 @@ export const Products = () => {
         title="Add New Product"
         open={isAddModalVisible}
         onOk={handleAddOk}
+        okText="Save Product"
         onCancel={handleAddCancel}
       >
         <Form form={form} layout="vertical">
@@ -395,21 +488,30 @@ export const Products = () => {
             <InputNumber min={0} />
           </Form.Item>
           <Form.Item
-            name="price"
-            label="Price"
-            rules={[{ required: true, message: "Please enter price!" }]}
+            name="cost_price"
+            label="Cost Price"
+            rules={[{ required: true, message: "Please enter cost price!" }]}
           >
             <InputNumber min={0} step={0.01} />
           </Form.Item>
           <Form.Item
-            name="category"
+            name="selling_price"
+            label="Sale Price"
+            rules={[{ required: true, message: "Please enter sale price!" }]}
+          >
+            <InputNumber min={0} step={0.01} />
+          </Form.Item>
+          <Form.Item
+            name="category_id"
             label="Category"
             rules={[{ required: true, message: "Please select category!" }]}
           >
             <Select>
-              <Option value="shirts">Shirts</Option>
-              <Option value="pants">Pants</Option>
-              <Option value="accessories">Accessories</Option>
+              {categories?.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Form>

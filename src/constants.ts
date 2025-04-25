@@ -1,12 +1,12 @@
 export const ROUTES = {
   DASHBOARD: "/",
   PRODUCTS: "/products",
+  CATEGORIES: "/categories",
   BILLING: "/billing",
   INVOICES: "/invoices",
   SALES_HISTORY: "/sales-history",
   RETURNS: "/returns",
   ORDERS: "/orders",
-  STOCKS: "/stocks",
   CUSTOMERS: "/customers",
   SUPPLIERS: "/suppliers",
   EXPENSES: "/expenses",

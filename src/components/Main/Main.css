@@ -99,3 +99,7 @@ label {
 .content::-webkit-scrollbar-track {
   margin: 15px 0;
 }
+
+.ant-table-selection-column {
+  background-color: white !important;
+}
