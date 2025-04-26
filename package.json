@@ -2,7 +2,7 @@
   "name": "stock-smart",
   "description": "Inventory and Sales Management System",
   "version": "0.0.0",
-  "license": "ISC",
+  "license": "MIT",
   "author": "Junaid Javed",
   "private": true,
   "main": "dist/main.js",
