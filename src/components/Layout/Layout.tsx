@@ -2,17 +2,11 @@ import React, { useState } from "react";
 import {
   BarChartOutlined,
   BoxPlotOutlined,
-  CalculatorOutlined,
-  FileTextOutlined,
-  HistoryOutlined,
   InboxOutlined,
-  LineChartOutlined,
-  MoneyCollectOutlined,
   PieChartOutlined,
   ShoppingOutlined,
+  TagOutlined,
   TeamOutlined,
-  UndoOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -44,9 +38,13 @@ const items: MenuItem[] = [
     getItem("Products", ROUTES.PRODUCTS, <BoxPlotOutlined />),
     getItem("Categories", ROUTES.CATEGORIES, <InboxOutlined />),
   ]),
-  getItem("Purchases", "2", <InboxOutlined />, [
-    getItem("Orders", ROUTES.ORDERS, <InboxOutlined />),
+  getItem("Purchases", "2", <TagOutlined />, [
+    getItem("Purchase Orders", ROUTES.PURCHASE_ORDERS, <InboxOutlined />),
     getItem("Suppliers", ROUTES.SUPPLIERS, <TeamOutlined />),
+  ]),
+  getItem("Sales", "4", <ShoppingOutlined />, [
+    getItem("Sales Orders", ROUTES.SALES_ORDERS, <InboxOutlined />),
+    getItem("Customers", ROUTES.CUSTOMERS, <TeamOutlined />),
   ]),
   getItem("Reports", "18", <BarChartOutlined />, [
     getItem("Sales Reports", ROUTES.SALES_REPORTS, <BarChartOutlined />),
@@ -56,15 +54,6 @@ const items: MenuItem[] = [
       <BarChartOutlined />
     ),
   ]),
-  getItem("Finance", "3", <MoneyCollectOutlined />, [
-    getItem("Expenses", ROUTES.EXPENSES, <CalculatorOutlined />),
-    getItem("Revenue Tracking", ROUTES.REVENUE_TRACKING, <LineChartOutlined />),
-  ]),
-  getItem("Billing", ROUTES.BILLING, <ShoppingOutlined />),
-  getItem("Invoices", ROUTES.INVOICES, <FileTextOutlined />),
-  getItem("Sales History", ROUTES.SALES_HISTORY, <HistoryOutlined />),
-  getItem("Returns", ROUTES.RETURNS, <UndoOutlined />),
-  getItem("Customers", ROUTES.CUSTOMERS, <UserOutlined />),
 ];
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({
@@ -77,6 +66,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
+        width={230}
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
