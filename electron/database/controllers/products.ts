@@ -10,9 +10,9 @@ export const registerProductController = (ipcMain: IpcMain) => {
       name: product.name,
       sku: product.sku,
       upc: product.upc,
-      cost_price: product.cost_price,
-      selling_price: product.selling_price,
-      stock_quantity: product.stock_quantity,
+      costPrice: product.costPrice,
+      sellingPrice: product.sellingPrice,
+      stockQuantity: product.stockQuantity,
       category_id: product.category_id,
     });
   });
@@ -22,9 +22,9 @@ export const registerProductController = (ipcMain: IpcMain) => {
         name: product.name,
         sku: product.sku,
         upc: product.upc,
-        cost_price: product.cost_price,
-        selling_price: product.selling_price,
-        stock_quantity: product.stock_quantity,
+        costPrice: product.costPrice,
+        sellingPrice: product.sellingPrice,
+        stockQuantity: product.stockQuantity,
         category_id: product.category_id,
       },
       { where: { id } }
@@ -37,9 +37,6 @@ export const registerProductController = (ipcMain: IpcMain) => {
     return await Product.destroy({ where: { id: ids } });
   });
   ipcMain.handle("add-product-stock", async (event, id, quantity) => {
-    return await Product.update(
-      { stock_quantity: quantity },
-      { where: { id } }
-    );
+    return await Product.update({ stockQuantity: quantity }, { where: { id } });
   });
 };

@@ -5,9 +5,9 @@ interface IProduct {
   name: string;
   sku: string;
   upc: string;
-  cost_price: number;
-  selling_price: number;
-  stock_quantity: number;
+  costPrice: number;
+  sellingPrice: number;
+  stockQuantity: number;
   category_id: number;
   createdAt: Date;
   updatedAt: Date;
@@ -33,14 +33,14 @@ interface ISupplier {
 
 interface IPurchaseOrder {
   id: number;
-  supplier_id: number;
-  order_date: Date;
+  supplierId: number;
+  orderDate: Date;
   products: {
     product_id: number;
     quantity: number;
     price: number; // Price at which the product was purchased.  Important for history.
   }[];
-  total_amount: number;
+  totalAmount: number;
   status: "pending" | "received" | "cancelled";
   createdAt: Date;
   updatedAt: Date;
@@ -48,14 +48,14 @@ interface IPurchaseOrder {
 
 interface ISalesOrder {
   id: number;
-  customer_id: number;
-  order_date: Date;
+  customerId: number;
+  orderDate: Date;
   products: {
     product_id: number;
     quantity: number;
     price: number;
   }[];
-  total_amount: number;
+  totalAmount: number;
   status: string;
   createdAt: Date;
   updatedAt: Date;

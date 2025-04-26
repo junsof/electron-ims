@@ -13,6 +13,9 @@ import { Layout, Menu } from "antd";
 import { ROUTES } from "../../constants";
 import { useNavigate } from "react-router-dom";
 
+import LOGO from "../../assets/icons/icon.png";
+import { Footer } from "antd/es/layout/layout";
+
 const { Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -70,6 +73,39 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            padding: 24,
+          }}
+        >
+          <img
+            style={{ transform: "rotate(45deg)" }}
+            width={50}
+            src={LOGO}
+            alt="logo"
+          />
+          {!collapsed && (
+            <span
+              style={{
+                background: "linear-gradient(to right, #0093E9, #df7777)",
+                fontFamily: "Arial, sans-serif",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                fontSize: 16,
+                textAlign: "center",
+                lineHeight: "1.4rem",
+                fontWeight: 600,
+                marginTop: 6,
+              }}
+            >
+              Stock Smart
+            </span>
+          )}
+        </div>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"

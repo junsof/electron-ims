@@ -57,7 +57,7 @@ const SalesOrderPage = () => {
       // Convert date strings to Date objects.  Crucial for DatePicker and consistency.
       const formattedOrders = orders.map((order: any) => ({
         ...order.dataValues,
-        order_date: new Date(order.dataValues.order_date),
+        orderDate: new Date(order.dataValues.orderDate),
       }));
 
       setSalesOrders(formattedOrders);
@@ -99,8 +99,8 @@ const SalesOrderPage = () => {
   };
 
   const filteredSalesOrders = salesOrders.filter((order) => {
-    const customerName = getCustomerName(order.customer_id).toLowerCase();
-    const orderDate = moment(order.order_date).format("YYYY-MM-DD"); // Format for comparison
+    const customerName = getCustomerName(order.customerId).toLowerCase();
+    const orderDate = moment(order.orderDate).format("YYYY-MM-DD"); // Format for comparison
     const productNames = order.products
       .map((p) => getProductName(p.product_id).toLowerCase())
       .join(", ");
@@ -124,17 +124,17 @@ const SalesOrderPage = () => {
       const values = await form.validateFields();
 
       // Convert the date using moment
-      const orderDate = moment(values.order_date).toDate();
+      const orderDate = moment(values.orderDate).toDate();
 
       const newOrder: Omit<ISalesOrder, "id" | "createdAt" | "updatedAt"> = {
-        customer_id: values.customer_id,
-        order_date: orderDate,
+        customerId: values.customerId,
+        orderDate: orderDate,
         products: values.products.map((p: any) => ({
           product_id: p.product_id,
           quantity: p.quantity,
           price: p.price,
         })),
-        total_amount: calculateTotalPrice(
+        totalAmount: calculateTotalPrice(
           values.products.map((p: any) => ({
             product_id: p.product_id,
             quantity: p.quantity,
@@ -149,7 +149,7 @@ const SalesOrderPage = () => {
       // Convert date from string to Date object
       const formattedCreatedOrder = {
         ...createdOrder.dataValues,
-        order_date: new Date(createdOrder.dataValues.order_date),
+        orderDate: new Date(createdOrder.dataValues.orderDate),
       };
 
       setSalesOrders([...salesOrders, formattedCreatedOrder]);
@@ -169,7 +169,7 @@ const SalesOrderPage = () => {
     // Format the date for the DatePicker
     editForm.setFieldsValue({
       ...record,
-      order_date: moment(record.order_date),
+      orderDate: moment(record.orderDate),
     });
     setIsEditModalVisible(true);
   };
@@ -186,14 +186,14 @@ const SalesOrderPage = () => {
 
       const updatedOrder: Omit<ISalesOrder, "id" | "createdAt" | "updatedAt"> =
         {
-          customer_id: values.customer_id,
-          order_date: values.order_date.toDate(),
+          customerId: values.customerId,
+          orderDate: values.orderDate.toDate(),
           products: values.products.map((p: any) => ({
             product_id: p.product_id,
             quantity: p.quantity,
             price: p.price,
           })),
-          total_amount: calculateTotalPrice(
+          totalAmount: calculateTotalPrice(
             values.products.map((p: any) => ({
               product_id: p.product_id,
               quantity: p.quantity,
@@ -296,8 +296,8 @@ const SalesOrderPage = () => {
         "Total Amount",
       ],
       ...filteredSalesOrders.map((order) => {
-        const customerName = getCustomerName(order.customer_id);
-        const orderDate = moment(order.order_date).format("YYYY-MM-DD");
+        const customerName = getCustomerName(order.customerId);
+        const orderDate = moment(order.orderDate).format("YYYY-MM-DD");
         const productList = order.products
           .map(
             (p) =>
@@ -306,7 +306,7 @@ const SalesOrderPage = () => {
               })`
           )
           .join(", ");
-        const totalAmount = order.total_amount;
+        const totalAmount = order.totalAmount;
         const status = order.status;
 
         return [
@@ -355,8 +355,8 @@ const SalesOrderPage = () => {
     },
     {
       title: "Customer",
-      dataIndex: "customer_id",
-      key: "customer_id",
+      dataIndex: "customerId",
+      key: "customerId",
       render: (customerId) => getCustomerName(customerId),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -364,8 +364,8 @@ const SalesOrderPage = () => {
     },
     {
       title: "Order Date",
-      dataIndex: "order_date",
-      key: "order_date",
+      dataIndex: "orderDate",
+      key: "orderDate",
       render: (date) => moment(date).format("YYYY-MM-DD"),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -391,8 +391,8 @@ const SalesOrderPage = () => {
     },
     {
       title: "Total Amount",
-      dataIndex: "total_amount",
-      key: "total_amount",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       render: (amount) => amount?.toLocaleString("en-PK"),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -442,7 +442,7 @@ const SalesOrderPage = () => {
     availableProducts: IProduct[]
   ) => [
     {
-      name: "customer_id",
+      name: "customerId",
       label: "Customer",
       rules: [{ required: true, message: "Please select a customer!" }],
       children: (
@@ -456,7 +456,7 @@ const SalesOrderPage = () => {
       ),
     },
     {
-      name: "order_date",
+      name: "orderDate",
       label: "Order Date",
       rules: [{ required: true, message: "Please select order date!" }],
       children: <DatePicker style={{ width: "100%" }} />,

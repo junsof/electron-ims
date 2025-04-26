@@ -7,9 +7,9 @@ export const registerPurchaseOrderController = (ipcMain: IpcMain) => {
   });
   ipcMain.handle("add-purchase-order", async (event, purchaseOrder) => {
     return await PurchaseOrder.create({
-      supplier_id: purchaseOrder.supplier_id,
-      order_date: purchaseOrder.order_date,
-      total_amount: purchaseOrder.total_amount,
+      supplierId: purchaseOrder.supplierId,
+      orderDate: purchaseOrder.orderDate,
+      totalAmount: purchaseOrder.totalAmount,
       status: purchaseOrder.status,
       products: purchaseOrder.products,
     });
@@ -17,9 +17,9 @@ export const registerPurchaseOrderController = (ipcMain: IpcMain) => {
   ipcMain.handle("edit-purchase-order", async (event, id, purchaseOrder) => {
     return await PurchaseOrder.update(
       {
-        supplier_id: purchaseOrder.supplier_id,
-        order_date: purchaseOrder.order_date,
-        total_amount: purchaseOrder.total_amount,
+        supplierId: purchaseOrder.supplierId,
+        orderDate: purchaseOrder.orderDate,
+        totalAmount: purchaseOrder.totalAmount,
         status: purchaseOrder.status,
         products: purchaseOrder.products,
       },

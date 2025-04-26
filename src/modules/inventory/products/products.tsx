@@ -104,9 +104,9 @@ export const Products = () => {
         name: values.name,
         sku: values.sku,
         upc: values.upc,
-        cost_price: Number(values.cost_price),
-        selling_price: Number(values.selling_price),
-        stock_quantity: Number(values.stock_quantity),
+        costPrice: Number(values.costPrice),
+        sellingPrice: Number(values.sellingPrice),
+        stockQuantity: Number(values.stockQuantity),
         category_id: Number(values.category_id),
       });
       setDataSource([...dataSource, addedProduct.dataValues]);
@@ -171,12 +171,12 @@ export const Products = () => {
       if (!addingStockProduct?.id) return;
       const values = await addStockForm.validateFields(); // Validate the form
       const newStockQuantity =
-        (addingStockProduct?.stock_quantity || 0) + Number(values.stockToAdd); // Calculate new stock
+        (addingStockProduct?.stockQuantity || 0) + Number(values.stockToAdd); // Calculate new stock
       await window.api.addProductStock(addingStockProduct.id, newStockQuantity); // Update the product stock
       setDataSource((prev) =>
         prev.map((item) =>
           item.id === addingStockProduct.id
-            ? { ...item, stock_quantity: newStockQuantity }
+            ? { ...item, stockQuantity: newStockQuantity }
             : item
         )
       ); // Update the data source
@@ -196,9 +196,9 @@ export const Products = () => {
       ...filteredDataSource.map((item) => [
         item.name,
         item.sku,
-        item.stock_quantity,
-        item.cost_price,
-        item.selling_price,
+        item.stockQuantity,
+        item.costPrice,
+        item.sellingPrice,
         categories.find((c) => c.id === item.category_id)?.name,
       ]),
     ]
@@ -316,8 +316,8 @@ export const Products = () => {
     {
       title: (
         <Space>
-          UPC
-          <Tooltip title="Universal Product Code">
+          Barcode
+          <Tooltip title="Universal Product Code (UPC)">
             <InfoCircleOutlined style={{ fontSize: 12, color: "#999" }} />
           </Tooltip>
         </Space>
@@ -333,7 +333,7 @@ export const Products = () => {
     },
     {
       title: "Stock",
-      dataIndex: "stock_quantity",
+      dataIndex: "stockQuantity",
       key: "stock",
       width: 80,
       render: (stock: number) => (
@@ -347,21 +347,21 @@ export const Products = () => {
     },
     {
       title: "Cost Price",
-      dataIndex: "cost_price",
-      key: "cost_price",
+      dataIndex: "costPrice",
+      key: "costPrice",
       width: 100,
-      render: (cost_price: number) => `${cost_price?.toLocaleString("en-PK")}`,
+      render: (costPrice: number) => `${costPrice?.toLocaleString("en-PK")}`,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
     },
     {
       title: "Sale Price",
-      dataIndex: "selling_price",
-      key: "selling_price",
+      dataIndex: "sellingPrice",
+      key: "sellingPrice",
       width: 100,
-      render: (selling_price: number) =>
-        `${selling_price?.toLocaleString("en-PK")}`,
+      render: (sellingPrice: number) =>
+        `${sellingPrice?.toLocaleString("en-PK")}`,
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
@@ -526,7 +526,7 @@ export const Products = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="stock_quantity"
+            name="stockQuantity"
             label="Stock Quantity"
             rules={[
               { required: true, message: "Please enter stock quantity!" },
@@ -535,14 +535,14 @@ export const Products = () => {
             <InputNumber min={0} />
           </Form.Item>
           <Form.Item
-            name="cost_price"
+            name="costPrice"
             label="Cost Price"
             rules={[{ required: true, message: "Please enter cost price!" }]}
           >
             <InputNumber min={0} step={1} />
           </Form.Item>
           <Form.Item
-            name="selling_price"
+            name="sellingPrice"
             label="Sale Price"
             rules={[{ required: true, message: "Please enter sale price!" }]}
           >
@@ -594,7 +594,7 @@ export const Products = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="stock_quantity"
+            name="stockQuantity"
             label="Stock Quantity"
             rules={[
               { required: true, message: "Please enter stock quantity!" },
@@ -603,14 +603,14 @@ export const Products = () => {
             <InputNumber min={0} />
           </Form.Item>
           <Form.Item
-            name="cost_price"
+            name="costPrice"
             label="Cost Price"
             rules={[{ required: true, message: "Please enter cost price!" }]}
           >
             <InputNumber min={0} step={0.01} />
           </Form.Item>
           <Form.Item
-            name="selling_price"
+            name="sellingPrice"
             label="Sale Price"
             rules={[{ required: true, message: "Please enter sale price!" }]}
           >

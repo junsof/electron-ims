@@ -73,7 +73,7 @@ const SalesReportPage = () => {
 
   // --- Data Processing for Metrics ---
   const totalSales = salesData.reduce(
-    (sum, order) => sum + order.total_amount,
+    (sum, order) => sum + order.totalAmount,
     0
   );
 
@@ -82,14 +82,14 @@ const SalesReportPage = () => {
   const lastMonthEnd = moment().subtract(1, "months").endOf("month");
   const lastMonthSales = salesData
     .filter((order) =>
-      moment(order.order_date).isBetween(
+      moment(order.orderDate).isBetween(
         lastMonthStart,
         lastMonthEnd,
         undefined,
         "[]"
       )
     )
-    .reduce((sum, order) => sum + order.total_amount, 0);
+    .reduce((sum, order) => sum + order.totalAmount, 0);
 
   const averageOrderValue =
     salesData.length > 0 ? totalSales / salesData.length : 0;
@@ -145,8 +145,8 @@ const SalesReportPage = () => {
   // --- Chart Data and Options ---
   const monthlySales: { [month: string]: number } = {};
   salesData.forEach((order) => {
-    const month = moment(order.order_date).format("YYYY-MM");
-    monthlySales[month] = (monthlySales[month] || 0) + order.total_amount;
+    const month = moment(order.orderDate).format("YYYY-MM");
+    monthlySales[month] = (monthlySales[month] || 0) + order.totalAmount;
   });
 
   const chartData = {
@@ -209,19 +209,19 @@ const SalesReportPage = () => {
     },
     {
       title: "Customer ID",
-      dataIndex: "customer_id",
-      key: "customer_id",
+      dataIndex: "customerId",
+      key: "customerId",
     },
     {
       title: "Order Date",
-      dataIndex: "order_date",
-      key: "order_date",
+      dataIndex: "orderDate",
+      key: "orderDate",
       render: (text) => moment(text).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       title: "Total Amount",
-      dataIndex: "total_amount",
-      key: "total_amount",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       render: (text) => `${text?.toLocaleString("en-PK")}`,
     },
     {

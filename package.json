@@ -1,7 +1,10 @@
 {
-  "name": "electron-ims",
-  "private": true,
+  "name": "stock-smart",
+  "description": "Inventory and Sales Management System",
   "version": "0.0.0",
+  "license": "ISC",
+  "author": "Junaid Javed",
+  "private": true,
   "main": "dist/main.js",
   "scripts": {
     "dev": "concurrently -k \"vite\" \"tsc -p tsconfig.main.json --watch\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron dist/main.js\"",

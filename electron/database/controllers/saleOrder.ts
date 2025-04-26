@@ -7,9 +7,9 @@ export const registerSaleOrderController = (ipcMain: IpcMain) => {
   });
   ipcMain.handle("add-sales-order", async (event, saleOrder) => {
     return await SaleOrder.create({
-      customer_id: saleOrder.customer_id,
-      order_date: saleOrder.order_date,
-      total_amount: saleOrder.total_amount,
+      customerId: saleOrder.customerId,
+      orderDate: saleOrder.orderDate,
+      totalAmount: saleOrder.totalAmount,
       status: saleOrder.status,
       products: saleOrder.products,
     });
@@ -17,9 +17,9 @@ export const registerSaleOrderController = (ipcMain: IpcMain) => {
   ipcMain.handle("edit-sales-order", async (event, id, saleOrder) => {
     return await SaleOrder.update(
       {
-        customer_id: saleOrder.customer_id,
-        order_date: saleOrder.order_date,
-        total_amount: saleOrder.total_amount,
+        customerId: saleOrder.customerId,
+        orderDate: saleOrder.orderDate,
+        totalAmount: saleOrder.totalAmount,
         status: saleOrder.status,
         products: saleOrder.products,
       },

@@ -58,7 +58,7 @@ const PurchaseOrderPage = () => {
       // Convert date strings to Date objects.  Crucial for DatePicker and consistency.
       const formattedOrders = orders.map((order: any) => ({
         ...order.dataValues,
-        order_date: new Date(order.dataValues.order_date),
+        orderDate: new Date(order.dataValues.orderDate),
       }));
 
       setPurchaseOrders(formattedOrders);
@@ -100,8 +100,8 @@ const PurchaseOrderPage = () => {
   };
 
   const filteredPurchaseOrders = purchaseOrders.filter((order) => {
-    const supplierName = getSupplierName(order.supplier_id).toLowerCase();
-    const orderDate = moment(order.order_date).format("YYYY-MM-DD"); // Format for comparison
+    const supplierName = getSupplierName(order.supplierId).toLowerCase();
+    const orderDate = moment(order.orderDate).format("YYYY-MM-DD"); // Format for comparison
     const productNames = order.products
       .map((p) => getProductName(p.product_id).toLowerCase())
       .join(", ");
@@ -125,17 +125,17 @@ const PurchaseOrderPage = () => {
       const values = await form.validateFields();
 
       // Convert the date using moment
-      const orderDate = moment(values.order_date).toDate();
+      const orderDate = moment(values.orderDate).toDate();
 
       const newOrder: Omit<IPurchaseOrder, "id" | "createdAt" | "updatedAt"> = {
-        supplier_id: values.supplier_id,
-        order_date: orderDate,
+        supplierId: values.supplierId,
+        orderDate: orderDate,
         products: values.products.map((p: any) => ({
           product_id: p.product_id,
           quantity: p.quantity,
           price: p.price,
         })),
-        total_amount: calculateTotalPrice(
+        totalAmount: calculateTotalPrice(
           values.products.map((p: any) => ({
             product_id: p.product_id,
             quantity: p.quantity,
@@ -150,7 +150,7 @@ const PurchaseOrderPage = () => {
       // Convert date from string to Date object
       const formattedCreatedOrder = {
         ...createdOrder.dataValues,
-        order_date: new Date(createdOrder.dataValues.order_date),
+        orderDate: new Date(createdOrder.dataValues.orderDate),
       };
 
       setPurchaseOrders([...purchaseOrders, formattedCreatedOrder]);
@@ -170,7 +170,7 @@ const PurchaseOrderPage = () => {
     // Format the date for the DatePicker
     editForm.setFieldsValue({
       ...record,
-      order_date: moment(record.order_date),
+      orderDate: moment(record.orderDate),
     });
     setIsEditModalVisible(true);
   };
@@ -189,14 +189,14 @@ const PurchaseOrderPage = () => {
         IPurchaseOrder,
         "id" | "createdAt" | "updatedAt"
       > = {
-        supplier_id: values.supplier_id,
-        order_date: moment(values.order_date).toDate(),
+        supplierId: values.supplierId,
+        orderDate: moment(values.orderDate).toDate(),
         products: values.products.map((p: any) => ({
           product_id: p.product_id,
           quantity: p.quantity,
           price: p.price,
         })),
-        total_amount: calculateTotalPrice(
+        totalAmount: calculateTotalPrice(
           values.products.map((p: any) => ({
             product_id: p.product_id,
             quantity: p.quantity,
@@ -301,8 +301,8 @@ const PurchaseOrderPage = () => {
         "Total Amount",
       ],
       ...filteredPurchaseOrders.map((order) => {
-        const supplierName = getSupplierName(order.supplier_id);
-        const orderDate = moment(order.order_date).format("YYYY-MM-DD");
+        const supplierName = getSupplierName(order.supplierId);
+        const orderDate = moment(order.orderDate).format("YYYY-MM-DD");
         const productList = order.products
           .map(
             (p) =>
@@ -311,7 +311,7 @@ const PurchaseOrderPage = () => {
               })`
           )
           .join(", ");
-        const totalAmount = order.total_amount;
+        const totalAmount = order.totalAmount;
         const status = order.status;
 
         return [
@@ -360,8 +360,8 @@ const PurchaseOrderPage = () => {
     },
     {
       title: "Supplier",
-      dataIndex: "supplier_id",
-      key: "supplier_id",
+      dataIndex: "supplierId",
+      key: "supplierId",
       render: (supplierId) => getSupplierName(supplierId),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -369,8 +369,8 @@ const PurchaseOrderPage = () => {
     },
     {
       title: "Order Date",
-      dataIndex: "order_date",
-      key: "order_date",
+      dataIndex: "orderDate",
+      key: "orderDate",
       render: (date) => moment(date).format("YYYY-MM-DD"),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -396,8 +396,8 @@ const PurchaseOrderPage = () => {
     },
     {
       title: "Total Amount",
-      dataIndex: "total_amount",
-      key: "total_amount",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       render: (amount) => amount?.toLocaleString("en-PK"),
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
@@ -447,7 +447,7 @@ const PurchaseOrderPage = () => {
     availableProducts: IProduct[]
   ) => [
     {
-      name: "supplier_id",
+      name: "supplierId",
       label: "Supplier",
       rules: [{ required: true, message: "Please select a supplier!" }],
       children: (
@@ -461,7 +461,7 @@ const PurchaseOrderPage = () => {
       ),
     },
     {
-      name: "order_date",
+      name: "orderDate",
       label: "Order Date",
       rules: [{ required: true, message: "Please select order date!" }],
       children: <DatePicker style={{ width: "100%" }} />,

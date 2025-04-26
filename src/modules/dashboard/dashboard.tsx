@@ -109,16 +109,16 @@ const DashboardPage = () => {
 
   // --- Data Processing for Metrics ---
   const currentMonthSales = salesData
-    .filter((order) => moment(order.order_date).isSame(moment(), "month"))
-    .reduce((sum, order) => sum + order.total_amount, 0);
+    .filter((order) => moment(order.orderDate).isSame(moment(), "month"))
+    .reduce((sum, order) => sum + order.totalAmount, 0);
 
   const totalProducts = products.length;
   const totalAvailableStock = products.reduce(
-    (sum, product) => sum + product.stock_quantity,
+    (sum, product) => sum + product.stockQuantity,
     0
   );
   const totalWorthOfStock = products.reduce(
-    (sum, product) => sum + product.stock_quantity * product.cost_price,
+    (sum, product) => sum + product.stockQuantity * product.costPrice,
     0
   );
 
@@ -127,7 +127,7 @@ const DashboardPage = () => {
     order.products.forEach((orderedProduct) => {
       const product = products.find((p) => p.id === orderedProduct.product_id);
       if (product) {
-        totalCost += product.cost_price * orderedProduct.quantity;
+        totalCost += product.costPrice * orderedProduct.quantity;
       }
     });
   });
@@ -147,9 +147,9 @@ const DashboardPage = () => {
   });
 
   salesData.forEach((order) => {
-    const monthYear = moment(order.order_date).format("YYYY-MM");
+    const monthYear = moment(order.orderDate).format("YYYY-MM");
     if (monthlySalesData.hasOwnProperty(monthYear)) {
-      monthlySalesData[monthYear] += order.total_amount;
+      monthlySalesData[monthYear] += order.totalAmount;
     }
   });
 

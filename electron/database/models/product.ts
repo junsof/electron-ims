@@ -11,9 +11,9 @@ export const Product = sequelize.define("Product", {
   name: DataTypes.STRING,
   sku: DataTypes.STRING,
   upc: DataTypes.STRING,
-  cost_price: DataTypes.DECIMAL,
-  selling_price: DataTypes.DECIMAL,
-  stock_quantity: DataTypes.INTEGER,
+  costPrice: DataTypes.DECIMAL,
+  sellingPrice: DataTypes.DECIMAL,
+  stockQuantity: DataTypes.INTEGER,
   category_id: {
     type: DataTypes.INTEGER,
     references: {

@@ -7,15 +7,15 @@ export const PurchaseOrder = sequelize.define("PurchaseOrder", {
     primaryKey: true,
     autoIncrement: true,
   },
-  supplier_id: {
+  supplierId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  order_date: {
+  orderDate: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  total_amount: {
+  totalAmount: {
     type: DataTypes.DECIMAL,
     allowNull: false,
   },

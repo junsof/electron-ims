@@ -89,15 +89,15 @@ const InventoryReportPage = () => {
   // --- Data Processing for Metrics ---
   const totalProducts = inventoryData.length;
   const totalStock = inventoryData.reduce(
-    (sum, product) => sum + product.stock_quantity,
+    (sum, product) => sum + product.stockQuantity,
     0
   );
   const lowStockThreshold = 10; // Define low stock threshold
   const lowStockProducts = inventoryData.filter(
-    (product) => product.stock_quantity <= lowStockThreshold
+    (product) => product.stockQuantity <= lowStockThreshold
   );
   const outOfStockProducts = inventoryData.filter(
-    (product) => product.stock_quantity === 0
+    (product) => product.stockQuantity === 0
   );
 
   // --- Chart Data and Options ---
@@ -105,7 +105,7 @@ const InventoryReportPage = () => {
     series: [
       {
         name: "Stock Quantity",
-        data: inventoryData.map((product) => product.stock_quantity),
+        data: inventoryData.map((product) => product.stockQuantity),
       },
     ],
     categories: inventoryData.map((product) => product.name),
@@ -196,8 +196,8 @@ const InventoryReportPage = () => {
     },
     {
       title: "Stock Quantity",
-      dataIndex: "stock_quantity",
-      key: "stock_quantity",
+      dataIndex: "stockQuantity",
+      key: "stockQuantity",
     },
     {
       title: "Category",
