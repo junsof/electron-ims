@@ -520,8 +520,8 @@ export const Products = () => {
           </Form.Item>
           <Form.Item
             name="upc"
-            label="UPC"
-            rules={[{ required: true, message: "Please enter UPC!" }]}
+            label="Barcode"
+            rules={[{ required: true, message: "Please enter Barcode!" }]}
           >
             <Input />
           </Form.Item>
@@ -588,8 +588,8 @@ export const Products = () => {
           </Form.Item>
           <Form.Item
             name="upc"
-            label="UPC"
-            rules={[{ required: true, message: "Please enter UPC!" }]}
+            label="Barcode"
+            rules={[{ required: true, message: "Please enter Barcode!" }]}
           >
             <Input />
           </Form.Item>

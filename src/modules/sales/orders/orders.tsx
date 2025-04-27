@@ -113,7 +113,10 @@ const SalesOrderPage = () => {
   });
 
   // --- Add ---
-  const showAddModal = () => setIsAddModalVisible(true);
+  const showAddModal = () => {
+    setIsAddModalVisible(true);
+    setEditingSalesOrder(null);
+  };
   const handleAddCancel = () => {
     setIsAddModalVisible(false);
     form.resetFields();
@@ -144,15 +147,9 @@ const SalesOrderPage = () => {
         status: values.status,
       };
 
-      const createdOrder = await window.api.addSalesOrder(newOrder);
+      await window.api.addSalesOrder(newOrder);
+      await fetchData();
 
-      // Convert date from string to Date object
-      const formattedCreatedOrder = {
-        ...createdOrder.dataValues,
-        orderDate: new Date(createdOrder.dataValues.orderDate),
-      };
-
-      setSalesOrders([...salesOrders, formattedCreatedOrder]);
       setIsAddModalVisible(false);
       form.resetFields();
       message.success("Sales Order added successfully.");
@@ -205,20 +202,11 @@ const SalesOrderPage = () => {
 
       await window.api.editSalesOrder(editingSalesOrder.id, updatedOrder);
 
-      const updatedOrderWithId = {
-        ...updatedOrder,
-        id: editingSalesOrder.id,
-        createdAt: editingSalesOrder.createdAt,
-        updatedAt: new Date(),
-      };
+      await fetchData();
 
-      setSalesOrders((prev) =>
-        prev.map((order) =>
-          order.id === editingSalesOrder.id ? updatedOrderWithId : order
-        )
-      );
       setIsEditModalVisible(false);
       setEditingSalesOrder(null);
+
       message.success("Sales Order updated successfully.");
     } catch (error) {
       console.error("Failed to edit sales order:", error);
@@ -237,7 +225,8 @@ const SalesOrderPage = () => {
       onOk: async () => {
         try {
           await window.api.deleteSalesOrder(id);
-          setSalesOrders((prev) => prev.filter((order) => order.id !== id));
+          await fetchData();
+
           message.success("Sales Order deleted successfully.");
         } catch (error) {
           console.error("Failed to delete sales order:", error);
@@ -270,10 +259,8 @@ const SalesOrderPage = () => {
             await Promise.all(
               idsToDelete.map((id) => window.api.deleteSalesOrder(id))
             );
-            setSalesOrders((prev) =>
-              prev.filter((order) => !selectedSalesOrderKeys.includes(order.id))
-            );
-            setSelectedSalesOrderKeys([]); // Clear selection
+            await fetchData();
+
             message.success("Selected sales orders deleted successfully.");
           }
         } catch (error) {
@@ -435,6 +422,25 @@ const SalesOrderPage = () => {
     },
   ];
 
+  const getProductSellingPrice = (productId: number) => {
+    const product = products.find((p) => p.id === productId);
+    return product?.sellingPrice;
+  };
+
+  const getProductStockQuantity = (productId: number) => {
+    const product = products.find((p) => p.id === productId);
+    const editingProduct = editingSalesOrder?.products?.find(
+      (p) => p.product_id === productId
+    );
+
+    return (
+      (product?.stockQuantity || 0) +
+      (editingSalesOrder?.status === "cancelled"
+        ? 0
+        : editingProduct?.quantity || 0)
+    );
+  };
+
   // --- Add/Edit Form ---
   const salesOrderForm = (
     _: unknown,
@@ -501,10 +507,30 @@ const SalesOrderPage = () => {
                     ]}
                     style={{ flex: 2 }}
                   >
-                    <Select>
+                    <Select
+                      onChange={(productId) => {
+                        const sellingPrice = getProductSellingPrice(productId);
+                        form.setFieldsValue({
+                          products: form
+                            .getFieldValue("products")
+                            .map((item: any, i: number) =>
+                              i === index
+                                ? { ...item, price: sellingPrice }
+                                : item
+                            ),
+                        });
+                      }}
+                    >
                       {availableProducts.map((product) => (
                         <Option key={product.id} value={product.id}>
-                          {product.name}
+                          {product.name} (Stock:{" "}
+                          {product.stockQuantity +
+                            (editingSalesOrder?.status === "cancelled"
+                              ? 0
+                              : editingSalesOrder?.products?.find(
+                                  (p) => p.product_id === product.id
+                                )?.quantity || 0)}
+                          )
                         </Option>
                       ))}
                     </Select>
@@ -515,6 +541,35 @@ const SalesOrderPage = () => {
                     label={index === 0 ? "Quantity" : ""}
                     rules={[
                       { required: true, message: "Please enter quantity" },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (!value || value < 1) {
+                            return Promise.reject(
+                              new Error("Quantity must be at least 1")
+                            );
+                          }
+
+                          const product_id = getFieldValue([
+                            "products",
+                            field.key,
+                            "product_id",
+                          ]);
+
+                          const stockQuantity =
+                            getProductStockQuantity(product_id);
+                          if (
+                            stockQuantity !== undefined &&
+                            value > stockQuantity
+                          ) {
+                            return Promise.reject(
+                              new Error(
+                                `Quantity exceeds available stock (${stockQuantity})`
+                              )
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
                     ]}
                     style={{ flex: 1 }}
                   >
@@ -524,10 +579,9 @@ const SalesOrderPage = () => {
                     {...field}
                     name={[field.name, "price"]}
                     label={index === 0 ? "Price" : ""}
-                    rules={[{ required: true, message: "Please enter price" }]}
                     style={{ flex: 1 }}
                   >
-                    <InputNumber min={0} />
+                    <InputNumber disabled />
                   </Form.Item>
                   {fields.length > 1 ? (
                     <Button
