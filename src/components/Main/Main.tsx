@@ -20,13 +20,14 @@ export const Main = () => {
           <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
           <Route path={ROUTES.PRODUCTS} element={<Products />} />
           <Route path={ROUTES.CATEGORIES} element={<CategoryPage />} />
-          <Route path={ROUTES.SUPPLIERS} element={<SupplierPage />} />
+
           <Route
             path={ROUTES.PURCHASE_ORDERS}
             element={<PurchaseOrderPage />}
           />
-          <Route path={ROUTES.CUSTOMERS} element={<CustomerPage />} />
+          <Route path={ROUTES.SUPPLIERS} element={<SupplierPage />} />
           <Route path={ROUTES.SALES_ORDERS} element={<SalesOrderPage />} />
+          <Route path={ROUTES.CUSTOMERS} element={<CustomerPage />} />
           <Route
             path={ROUTES.INVENTORY_REPORTS}
             element={<InventoryReportPage />}

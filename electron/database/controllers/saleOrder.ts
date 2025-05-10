@@ -32,7 +32,7 @@ export const registerSaleOrderController = (ipcMain: IpcMain) => {
       );
 
       if (saleOrder.products?.length) {
-        const products = saleOrder.products.map((p) => ({
+        const products = saleOrder.products.map((p: any) => ({
           saleOrderId: newOrder.id,
           product_id: p.product_id,
           quantity: p.quantity,
@@ -115,7 +115,7 @@ export const registerSaleOrderController = (ipcMain: IpcMain) => {
           transaction: t,
         });
 
-        const products = saleOrder.products.map((p) => ({
+        const products = saleOrder.products.map((p: any) => ({
           saleOrderId: id,
           product_id: p.product_id,
           quantity: p.quantity,
@@ -146,9 +146,10 @@ export const registerSaleOrderController = (ipcMain: IpcMain) => {
           }
         }
         const removedProducts = existingOrderProducts.filter(
-          (oldProduct) =>
+          (oldProduct: any) =>
             !saleOrder.products.some(
-              (newProduct) => newProduct.product_id === oldProduct.product_id
+              (newProduct: any) =>
+                newProduct.product_id === oldProduct.product_id
             )
         );
 

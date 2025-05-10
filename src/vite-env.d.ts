@@ -85,7 +85,6 @@ interface Window {
     ) => Promise<number[]>;
     deleteProduct: (id: number) => Promise<number[]>;
     deleteMultipleProducts: (ids: number[]) => Promise<number[]>;
-    addProductStock: (id: number, quantity: number) => Promise<number[]>;
     // Category
     getCategories: () => Promise<{ dataValues: ICategory }[]>;
     addCategory: (

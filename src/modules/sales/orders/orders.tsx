@@ -10,6 +10,8 @@ import {
   DatePicker,
   InputNumber,
   message,
+  Tag,
+  type FormInstance,
 } from "antd";
 import {
   SearchOutlined,
@@ -392,6 +394,26 @@ const SalesOrderPage = () => {
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
+      render: (status) => {
+        let color = "";
+        switch (status) {
+          case "pending":
+            color = "yellow";
+            break;
+          case "shipped":
+            color = "blue";
+            break;
+          case "delivered":
+            color = "green";
+            break;
+          case "cancelled":
+            color = "red";
+            break;
+          default:
+            color = "gray";
+        }
+        return <Tag color={color}>{status}</Tag>;
+      },
     },
     {
       title: "Action",
@@ -443,10 +465,11 @@ const SalesOrderPage = () => {
 
   // --- Add/Edit Form ---
   const salesOrderForm = (
-    _: unknown,
+    formInstance: FormInstance,
     availableCustomers: ICustomer[],
     availableProducts: IProduct[]
   ) => [
+    //Added formInstance
     {
       name: "customerId",
       label: "Customer",
@@ -508,12 +531,25 @@ const SalesOrderPage = () => {
                     style={{ flex: 2 }}
                   >
                     <Select
+                      showSearch // Enable search
+                      filterOption={(input, option: any) => {
+                        const label =
+                          typeof option.children === "string"
+                            ? option.children
+                            : Array.isArray(option.children)
+                            ? option.children.join("")
+                            : "";
+                        return (
+                          label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        );
+                      }}
                       onChange={(productId) => {
                         const sellingPrice = getProductSellingPrice(productId);
-                        form.setFieldsValue({
-                          products: form
-                            .getFieldValue("products")
-                            .map((item: any, i: number) =>
+                        formInstance.setFieldsValue({
+                          //changed from form to formInstance
+                          products: formInstance //changed from form to formInstance
+                            ?.getFieldValue("products")
+                            ?.map((item: any, i: number) =>
                               i === index
                                 ? { ...item, price: sellingPrice }
                                 : item
@@ -670,11 +706,15 @@ const SalesOrderPage = () => {
         onCancel={handleAddCancel}
       >
         <Form form={form} layout="vertical">
-          {salesOrderForm(form, customers, products).map((item) => (
-            <Form.Item key={item.name} {...item}>
-              {item.children}
-            </Form.Item>
-          ))}
+          {salesOrderForm(form, customers, products).map(
+            (
+              item // Pass the form instance
+            ) => (
+              <Form.Item key={item.name} {...item}>
+                {item.children}
+              </Form.Item>
+            )
+          )}
         </Form>
       </Modal>
 
@@ -686,11 +726,15 @@ const SalesOrderPage = () => {
         onCancel={handleEditCancel}
       >
         <Form form={editForm} layout="vertical">
-          {salesOrderForm(editForm, customers, products).map((item) => (
-            <Form.Item key={item.name} {...item}>
-              {item.children}
-            </Form.Item>
-          ))}
+          {salesOrderForm(editForm, customers, products).map(
+            (
+              item // Pass the editForm instance
+            ) => (
+              <Form.Item key={item.name} {...item}>
+                {item.children}
+              </Form.Item>
+            )
+          )}
         </Form>
       </Modal>
     </div>

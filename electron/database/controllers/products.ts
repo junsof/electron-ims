@@ -36,7 +36,4 @@ export const registerProductController = (ipcMain: IpcMain) => {
   ipcMain.handle("delete-multiple-products", async (event, ids) => {
     return await Product.destroy({ where: { id: ids } });
   });
-  ipcMain.handle("add-product-stock", async (event, id, quantity) => {
-    return await Product.update({ stockQuantity: quantity }, { where: { id } });
-  });
 };

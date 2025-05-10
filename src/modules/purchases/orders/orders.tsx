@@ -10,6 +10,8 @@ import {
   DatePicker,
   InputNumber,
   message,
+  Tag,
+  type FormInstance,
 } from "antd";
 import {
   SearchOutlined,
@@ -410,6 +412,23 @@ const PurchaseOrderPage = () => {
       onHeaderCell: () => ({
         style: { position: "sticky", top: 0, zIndex: 1, background: "#fff" },
       }),
+      render: (status) => {
+        let color = "";
+        switch (status) {
+          case "pending":
+            color = "yellow";
+            break;
+          case "received":
+            color = "green";
+            break;
+          case "cancelled":
+            color = "red";
+            break;
+          default:
+            color = "gray";
+        }
+        return <Tag color={color}>{status}</Tag>;
+      },
     },
     {
       title: "Action",
@@ -442,7 +461,7 @@ const PurchaseOrderPage = () => {
 
   // --- Add/Edit Form ---
   const purchaseOrderForm = (
-    _: unknown,
+    _: FormInstance,
     availableSuppliers: ISupplier[],
     availableProducts: IProduct[]
   ) => [
@@ -505,7 +524,20 @@ const PurchaseOrderPage = () => {
                     ]}
                     style={{ flex: 2 }}
                   >
-                    <Select>
+                    <Select
+                      showSearch
+                      filterOption={(input, option: any) => {
+                        const label =
+                          typeof option.children === "string"
+                            ? option.children
+                            : Array.isArray(option.children)
+                            ? option.children.join("")
+                            : "";
+                        return (
+                          label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        );
+                      }}
+                    >
                       {availableProducts.map((product) => (
                         <Option key={product.id} value={product.id}>
                           {product.name}
@@ -620,11 +652,15 @@ const PurchaseOrderPage = () => {
         onCancel={handleAddCancel}
       >
         <Form form={form} layout="vertical">
-          {purchaseOrderForm(form, suppliers, products).map((item) => (
-            <Form.Item key={item.name} {...item}>
-              {item.children}
-            </Form.Item>
-          ))}
+          {purchaseOrderForm(form, suppliers, products).map(
+            (
+              item // Pass the form instance
+            ) => (
+              <Form.Item key={item.name} {...item}>
+                {item.children}
+              </Form.Item>
+            )
+          )}
         </Form>
       </Modal>
 
@@ -636,11 +672,15 @@ const PurchaseOrderPage = () => {
         onCancel={handleEditCancel}
       >
         <Form form={editForm} layout="vertical">
-          {purchaseOrderForm(editForm, suppliers, products).map((item) => (
-            <Form.Item key={item.name} {...item}>
-              {item.children}
-            </Form.Item>
-          ))}
+          {purchaseOrderForm(editForm, suppliers, products).map(
+            (
+              item // Pass the editForm instance
+            ) => (
+              <Form.Item key={item.name} {...item}>
+                {item.children}
+              </Form.Item>
+            )
+          )}
         </Form>
       </Modal>
     </div>

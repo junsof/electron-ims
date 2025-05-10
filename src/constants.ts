@@ -6,12 +6,6 @@ export const ROUTES = {
   SUPPLIERS: "/suppliers",
   SALES_ORDERS: "/sales-orders",
   CUSTOMERS: "/customers",
-  BILLING: "/billing",
-  INVOICES: "/invoices",
-  RETURNS: "/returns",
-  EXPENSES: "/expenses",
-  REVENUE_TRACKING: "/revenue-tracking",
   SALES_REPORTS: "/sales-reports",
   INVENTORY_REPORTS: "/inventory-reports",
-  USER_MANAGEMENT: "/user-management",
 };

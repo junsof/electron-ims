@@ -9,8 +9,6 @@ contextBridge.exposeInMainWorld("api", {
   deleteProduct: (id: number) => ipcRenderer.invoke("delete-product", id),
   deleteMultipleProducts: (ids: number[]) =>
     ipcRenderer.invoke("delete-multiple-products", ids),
-  addProductStock: (id: number, quantity: number) =>
-    ipcRenderer.invoke("add-product-stock", id, quantity),
 
   // Category
   getCategories: () => ipcRenderer.invoke("get-categories"),

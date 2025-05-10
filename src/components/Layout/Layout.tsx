@@ -14,7 +14,6 @@ import { ROUTES } from "../../constants";
 import { useNavigate } from "react-router-dom";
 
 import LOGO from "../../assets/icons/icon.png";
-import { Footer } from "antd/es/layout/layout";
 
 const { Sider } = Layout;
 

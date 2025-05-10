@@ -10,7 +10,6 @@ import {
   InputNumber,
   message,
   Tooltip,
-  Typography,
   Space,
 } from "antd";
 import {
@@ -19,14 +18,12 @@ import {
   PlusOutlined,
   FileExcelOutlined,
   EditOutlined,
-  PlusCircleOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import type { ColumnType } from "antd/es/table";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
-const { Text } = Typography;
 
 type Product = Window["types"]["Product"];
 type Category = Window["types"]["Category"];
@@ -39,18 +36,13 @@ export const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isAddStockModalVisible, setIsAddStockModalVisible] = useState(false); // New state for Add Stock Modal
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [addingStockProduct, setAddingStockProduct] = useState<Product | null>(
-    null
-  ); // New state to hold the product being stocked
   const [selectedProductKeys, setSelectedProductKeys] = useState<React.Key[]>(
     []
   ); // For checkbox selection
 
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
-  const [addStockForm] = Form.useForm(); // Form for Add Stock Modal
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,45 +140,6 @@ export const Products = () => {
     } catch (error) {
       console.error("Failed to edit product:", error);
       message.error("Failed to update product.");
-    }
-  };
-
-  const showAddStockModal = (record: Product) => {
-    // Function to show Add Stock Modal
-    setAddingStockProduct(record); // Store the product to add stock to
-    addStockForm.setFieldsValue({ stockToAdd: 0 }); // Initialize form field
-    setIsAddStockModalVisible(true); // Set modal visibility to true
-  };
-
-  const handleAddStockCancel = () => {
-    // Function to handle Add Stock Modal cancel
-    setIsAddStockModalVisible(false); // Set modal visibility to false
-    setAddingStockProduct(null); // Clear the product
-    addStockForm.resetFields(); // Reset the form
-  };
-
-  const handleAddStockOk = async () => {
-    // Function to handle Add Stock Modal OK button
-    try {
-      if (!addingStockProduct?.id) return;
-      const values = await addStockForm.validateFields(); // Validate the form
-      const newStockQuantity =
-        (addingStockProduct?.stockQuantity || 0) + Number(values.stockToAdd); // Calculate new stock
-      await window.api.addProductStock(addingStockProduct.id, newStockQuantity); // Update the product stock
-      setDataSource((prev) =>
-        prev.map((item) =>
-          item.id === addingStockProduct.id
-            ? { ...item, stockQuantity: newStockQuantity }
-            : item
-        )
-      ); // Update the data source
-      setIsAddStockModalVisible(false); // Close the modal
-      setAddingStockProduct(null); // Clear the product
-      addStockForm.resetFields(); // Reset the form
-      message.success("Stock added successfully.");
-    } catch (error) {
-      console.error("Failed to add stock:", error);
-      message.error("Failed to add stock.");
     }
   };
 
@@ -402,13 +355,6 @@ export const Products = () => {
             icon={<DeleteOutlined />}
           >
             Delete
-          </Button>
-          <Button
-            size="small"
-            onClick={() => showAddStockModal(record)}
-            icon={<PlusCircleOutlined />}
-          >
-            Add Stock
           </Button>
         </div>
       ),
@@ -628,25 +574,6 @@ export const Products = () => {
                 </Option>
               ))}
             </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Add Stock Modal */}
-      <Modal
-        title="Add Stock"
-        okText="Add Stock"
-        open={isAddStockModalVisible}
-        onOk={handleAddStockOk}
-        onCancel={handleAddStockCancel}
-      >
-        <Form form={addStockForm} layout="vertical">
-          <Form.Item
-            name="stockToAdd"
-            label="Stock to Add"
-            rules={[{ required: true, message: "Please enter stock to add!" }]}
-          >
-            <InputNumber min={0} />
           </Form.Item>
         </Form>
       </Modal>
