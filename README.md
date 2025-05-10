@@ -2,6 +2,8 @@
 
 **Stock Smart** is a cross-platform Inventory & Sales Management System built with Electron, React, Vite, TypeScript, SQLite3, and Sequelize. It supports hot module reloading during development and can be packaged for Windows (32-bit), macOS, and Linux using electron-builder.
 
+![ScreenShot](./src/assets/docs/main_window.png)
+
 ## 🛠 Tech Stack
 
 - Electron – Desktop app shell
